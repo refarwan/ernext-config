@@ -5,42 +5,56 @@ Translations: [English](README.md) | [Bahasa Indonesia](README-id.md)
 [![npm version](https://img.shields.io/npm/v/ernext-config.svg?style=flat-flat&color=3399ff)](https://www.npmjs.com/package/ernext-config)
 [![license](https://img.shields.io/npm/l/ernext-config.svg?style=flat-flat&color=47d147)](https://github.com/refarwan/ernext-config)
 
-The ultimate ESLint, Prettier, and Next.js config orchestrator. Standardize code format, enforce type-only imports, enforce clean component and folder casing, and dynamically manage Next.js environment check, proxies, and image domains with minimal configuration.
+The ultimate, zero-config Prettier, ESLint, and Next.js orchestrator. Standardize your code formatting, enforce type-only imports, manage strict casing conventions, and dynamically configure Next.js environment checks, proxies, and asset domains in seconds.
 
 ---
 
 ## ✨ Features
 
-- ⚡ **Auto-Setup**: Installs all required plugins, copies configuration templates, and configures VS Code & ESLint settings automatically.
-- 📐 **Enforce Type-Only Imports**: Directs ESLint and VS Code to automatically rewrite `import type { ... }` for TS interfaces and types.
-- 📁 **React & Next.js Casing Conventions**:
-  - Components (`components/`): Enforces **PascalCase** or **kebab-case** for file and folder naming.
-  - Hooks (`hooks/`): Enforces **camelCase** for filenames (e.g. `useActive.ts`).
-  - Utils, contexts, interfaces, lib, services, types: Enforces **kebab-case** or **camelCase**.
-- 🔮 **Smart Import Sorting**: Auto-sorts imports, cleanly separating values from types and grouping aliased paths.
+- ⚡ **Auto-pilot Setup**: Installs required devDependencies, copies configuration templates, and configures VS Code settings automatically.
+- 📐 **Strict Type-only Imports**: Configures VS Code and ESLint to automatically rewrite `import type { ... }` for TS interfaces and types.
+- 📁 **Casing Conventions Enforcer**:
+  - **Components (`components/`)**: Enforces **PascalCase** or **kebab-case** for file and folder naming.
+  - **Hooks (`hooks/`)**: Enforces **camelCase** for filenames (e.g. `useActive.ts`).
+  - **Utils, contexts, interfaces, lib, services, types**: Enforces **kebab-case** or **camelCase**.
+- 🔮 **Smart Import Sorting**: Auto-sorts imports, separating logic and components into clear categories, and cleanly separating value imports from type-only imports.
 - 🌐 **Dynamic Next.js Orchestration**:
-  - Validates environment variables (NEXT_PUBLIC_API_URL, NEXT_PUBLIC_APP_URL, etc.).
-  - Configures image RemotePatterns dynamically from API/CDN URL variables.
+  - Validates required environment variables (e.g., `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_APP_URL`).
+  - Parses image `remotePatterns` dynamically from API/CDN variables.
   - Enables unoptimized image processing automatically on `localhost`.
   - Configures allowed origins for Server Actions and middleware client max body sizes.
-  - Configures standard rewrites (`/data/:path*` to API URL).
+  - Generates proxy rewrites (`/data/:path*` to API URL) automatically.
+- 🛠️ **Idempotent Setup Script**: Won't corrupt or duplicate imports if run multiple times.
 
 ---
 
 ## 📦 Installation & Setup
 
-Apply this standardization to your Next.js project by running the setup CLI inside your project root:
+To apply these standard configurations to your Next.js project, simply run the initialization command directly in your project root:
 ```bash
 npx ernext-config
 ```
-*No initial installation is needed! The setup script will download the package, copy templates, configure your local files, and install all required devDependencies.*
+*No prior installation is required! The setup script will automatically configure your editor settings, update ESLint/Prettier configs, and install `ernext-config` along with all required devDependencies into your local project.*
 
 > [!TIP]
-> **VS Code Extension Cache**: If VS Code shows fake lint errors after setup, open Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`) and execute **`Developer: Restart Window`** to reload extensions.
+> **VS Code Extension Caching**: If your VS Code editor still displays false-positive red underline errors after setup, reload your editor window by opening the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`) and running **`Developer: Restart Window`** to force the extensions to load the newly installed plugins.
 
 > [!IMPORTANT]
-> **Recommended VS Code Extensions**:
-> To get real-time linting, format on save, and automatic type-only imports, install the official [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) and [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) VS Code extensions.
+> **Editor Extensions Recommended**:
+> For the best experience in VS Code or Antigravity IDE, ensure you have installed the official [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) and [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) extensions. This enables real-time linting, format-on-save, and automatic type-only imports to function flawlessly.
+
+---
+
+## ⚙️ How It Works (Automatic Setup)
+
+When you run `npx ernext-config`, the initialization script runs the following steps in your project root:
+
+1. **Copies `.prettierrc`**: Adds structured rules for Next.js import sorting and code formatting.
+2. **Configures VS Code Settings**: Safely merges standard settings into your `.vscode/settings.json` to enable type-only auto-imports.
+3. **Installs Dev Dependencies**: Installs the required plugins (`eslint-plugin-check-file`, `@ianvs/prettier-plugin-sort-imports`, `eslint-config-next`, `eslint-config-prettier`, etc.) to your local project.
+4. **Modifies `eslint.config.mjs`**: Automatically injects `eslintConfig` at the start of your ESLint Flat Config.
+5. **Configures Scripts**: Adds or updates the `format` script in your `package.json` to automatically format all files using Prettier.
+6. **Initial Formatting & Linting**: Automatically runs a formatting pass (`npm run format`) followed by a lint check (`npm run lint`) to tidy up your codebase immediately.
 
 ---
 
@@ -86,7 +100,7 @@ export default defineNextConfig({
 
 ## ⚙️ Manual Integration (Fallback)
 
-If you prefer to configure files manually, follow these steps:
+If you have a customized setup and the script skips automatic injection, you can add it manually:
 
 ### 1. Update `eslint.config.mjs`
 
@@ -94,9 +108,9 @@ If you prefer to configure files manually, follow these steps:
 import { eslintConfig } from "ernext-config";
 
 export default [
-  ...eslintConfig, // Add the spread operator at the start
+  ...eslintConfig, // <-- Add this spread operator at the start
   
-  // Custom rules...
+  // Your other custom configurations...
 ];
 ```
 
@@ -115,20 +129,68 @@ export default [
 
 ---
 
-## 📜 Formatting Standards
+## 📜 Formatting Standards Applied
 
 ### Prettier Import Sorting
-We use `@ianvs/prettier-plugin-sort-imports` to group imports clearly. The order is:
-1. **Built-in Node.js modules** (e.g. `fs`, `path`).
-2. **Third-party modules** (e.g. `react`, `next`).
-3. **Aliased Logic Modules** (`@/utils`, `@/hooks`, etc.).
-4. **Local Logic Modules** (relative `./utils`, `./hooks`, etc.).
-5. **Type Imports** (built-in, third-party, aliased, and relative type definitions).
+The plugin `@ianvs/prettier-plugin-sort-imports` organizes your imports into logical groups separated by empty lines. Here is the exact sorting order applied:
 
-### Folder & File Casing (check-file)
-- **`components/`**: PascalCase or kebab-case (e.g. `Navbar.tsx`, `MSItem.tsx`, `footer/Footer.tsx`).
-- **`hooks/`**: camelCase (e.g. `useVideoPlayer.ts`, `useAuth.ts`).
-- **`utils/`**, **`contexts/`**, **`interfaces/`**: kebab-case or camelCase (e.g. `axios-instance.tsx`, `item-data-map.ts`).
+#### 1. Value Imports (Logic & Runtime Code)
+1. **Built-in Node.js Modules**: Core modules (e.g. `fs`, `path`).
+2. **Third-party Modules**: Installed packages (e.g. `react`, `next`, `lucide-react`).
+3. **Aliased Constants** (using `@/constants` or `@/const`).
+4. **Local Constants** (using relative paths `./constants`, `./const`).
+5. **Aliased Utils, Hooks & Functions** (e.g. `@/utils`, `@/hooks`, `@/helpers`, `@/services`, `@/libs`, etc.).
+6. **Local Utils, Hooks & Functions** (e.g. `./utils`, `./hooks`, etc.).
+7. **Aliased JSX Components & Pages** (e.g. `@/components`, `@/layouts`, `@/pages`, etc.).
+8. **Local JSX Components & Pages** (e.g. `./components`, `./layouts`, etc.).
+9. **Aliased Other Files** (styles, assets, config files, etc.).
+10. **Local Other Files** (relative paths of other files).
+
+#### 2. Type Imports (Types & Interfaces)
+Type imports follow the exact same hierarchy structure (Built-in Types, Third-party Types, Aliased/Local Constants Types, Aliased/Local Utils Types, Aliased/Local Component Types, and Other Types), with each subset sorted internally.
+
+Example of sorted imports:
+```typescript
+// --- 1. VALUE IMPORTS (KODE LOGIKA) ---
+import fs from "fs";
+import { useState } from "react";
+import Link from "next/link";
+
+// Alias Local Modules
+import { API_ROUTES, APP_KEYS } from "@/constants";
+import { useAuth } from "@/hooks";
+import { formatDate } from "@/utils";
+import { Button, Sidebar } from "@/components";
+import "@/styles/globals.css";
+
+// Relative Local Modules
+import { CONFIG_DEFAULTS } from "./constants";
+import { parseJson } from "./utils";
+import { LocalCard } from "./components";
+import "./local-style.css";
+
+// --- 2. TYPE IMPORTS (INTERFACE / TYPES) ---
+import type { Metadata } from "next";
+
+// Alias Type Modules
+import type { AuthState } from "@/hooks";
+import type { ButtonProps } from "@/components/Button/interfaces";
+```
+
+### Naming & Directory Conventions
+- **Casing Rules**: 
+  - **`components/`**: PascalCase or kebab-case (e.g. `Navbar.tsx`, `MSItem.tsx`, `footer/Footer.tsx`).
+  - **`hooks/`**: camelCase (e.g. `useVideoPlayer.ts`, `useAuth.ts`).
+  - **`utils/`**, **`contexts/`**, **`interfaces/`**: kebab-case or camelCase (e.g. `axios-instance.tsx`, `item-data-map.ts`).
+- **Interfaces & Types Directory Structure**:
+  - **Single file (few interfaces)**: Use a single `interfaces.ts` file directly in the module folder (e.g. `src/users/interfaces.ts`).
+  - **Folder structure (multiple interfaces)**: Create an `interfaces/` folder, place individual `*.interface.ts` or `*.type.ts` files inside, and export them all from `interfaces/index.ts` using **named exports** (e.g. `export { User } from './user.interface';`). *Wildcard exports (`export *`) are strictly forbidden inside these index files.*
+- **Functions & Utilities Directory Structure**:
+  - **Single file (few utilities)**: Use a single `utils.ts` file directly in the module folder (e.g. `src/users/utils.ts`).
+  - **Folder structure (multiple utilities)**: Create a `utils/` folder, place individual `*.util.ts` or `*.function.ts` files inside, and export them all from `utils/index.ts` using **named exports** (e.g. `export { formatDate } from './format-date.util';`). *Wildcard exports (`export *`) are strictly forbidden inside these index files.*
+- **Constants & Enums Directory Structure**:
+  - **Single file (few constants)**: Use a single `constants.ts` file directly in the module folder (e.g. `src/users/constants.ts`).
+  - **Folder structure (multiple constants)**: Create a `constants/` folder, place individual `*.constant.ts` or `*.enum.ts` files inside, and export them all from `constants/index.ts` using **named exports** (e.g. `export { USER_ROLES } from './user-roles.constant';`). *Wildcard exports (`export *`) are strictly forbidden inside these index files.*
 
 ---
 
