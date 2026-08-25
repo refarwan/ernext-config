@@ -14,10 +14,12 @@ Orkestrator Prettier, ESLint, dan Next.js terbaik tanpa konfigurasi ribet. Stand
 - ⚡ **Setup Otomatis**: Memasang semua devDependencies, menyalin template konfigurasi, dan mengatur setelan VS Code secara otomatis.
 - 📐 **Paksakan Type-only Import**: Mengonfigurasi VS Code dan ESLint untuk otomatis menulis `import type { ... }` pada interface dan type.
 - 📁 **Konvensi Casing Ketat**:
-  - **Components (`components/`)**: Mewajibkan **PascalCase** atau **kebab-case** untuk penamaan file dan folder.
-  - **Hooks (`hooks/`)**: Mewajibkan **camelCase** untuk nama file (contoh: `useActive.ts`).
-  - **Utils, contexts, interfaces, lib, services, types**: Mewajibkan **kebab-case** atau **camelCase**.
+  - **Components (`components/`)**: Mewajibkan **PascalCase** untuk file komponen (contoh: `Navbar.tsx`), dan **PascalCase** atau **kebab-case** untuk folder.
+  - **Hooks (`hooks/`)**: Mewajibkan **camelCase** untuk file yang diawali `use` (contoh: `useActive.ts`), serta **kebab-case** untuk folder dan file non-hook lainnya.
+  - **Contexts (`contexts/`)**: Mewajibkan **PascalCase** untuk provider, **camelCase** untuk hook, dan **kebab-case** untuk file/folder lainnya.
+  - **Utils, interfaces, lib, services, types, constants, consts**: Mewajibkan **kebab-case** untuk file maupun folder (contoh: `get-hello-world.ts`, `default-name.ts`).
 - 🔮 **Pengurutan Impor Cerdas**: Mengurutkan impor secara otomatis, memisahkan impor modul logika dan tipe data ke dalam kategori yang jelas.
+- 🎨 **Pengurutan Kelas Tailwind CSS**: Mengurutkan kelas-kelas Tailwind CSS secara otomatis pada berkas React/Next.js untuk menjaga visual styling yang konsisten.
 - 🌐 **Orkestrasi Next.js Dinamis**:
   - Validasi variabel lingkungan (`NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_APP_URL`, dll.).
   - Mengonfigurasi RemotePatterns gambar secara otomatis dari variabel API/CDN.
@@ -53,83 +55,14 @@ Saat Anda menjalankan `npx ernext-config`, script inisialisasi akan mengeksekusi
 
 1. **Menyalin `.prettierrc`**: Menyediakan aturan terstruktur untuk pengurutan impor dan pemformatan kode Next.js.
 2. **Mengonfigurasi Pengaturan VS Code**: Menggabungkan konfigurasi secara aman ke dalam `.vscode/settings.json` Anda untuk mengaktifkan fitur type-only auto-imports.
-3. **Menginstal Dev Dependencies**: Memasang plugin yang diperlukan (`eslint-plugin-check-file`, `@ianvs/prettier-plugin-sort-imports`, `eslint-config-next`, `eslint-config-prettier`, dll.) ke dalam proyek lokal Anda.
-4. **Memodifikasi `eslint.config.mjs`**: Secara otomatis menyisipkan aturan `eslintConfig` pada awal konfigurasi ESLint Flat Config Anda.
+3. **Menginstal Dev Dependencies**: Memasang plugin yang diperlukan (`eslint-plugin-check-file`, `@ianvs/prettier-plugin-sort-imports`, `prettier-plugin-tailwindcss`, `eslint-config-next`, `eslint-config-prettier`, dll.) ke dalam proyek lokal Anda.
+4. **Memodifikasi `eslint.config.mjs`**: Secara otomatis menyisipkan aturan `eslintConfig` (sebagai `ernextConfig`) pada awal konfigurasi ESLint Flat Config Anda.
 5. **Mengonfigurasi Script**: Menambahkan atau memperbarui script `format` pada `package.json` target untuk pemformatan otomatis berkas menggunakan Prettier.
 6. **Pemformatan & Linting Awal**: Menjalankan format perdana (`npm run format`) diikuti pemeriksaan lint (`npm run lint`) untuk merapikan kode secara langsung.
 
----
 
-## 🛠️ Konfigurasi Next.js (`defineNextConfig`)
 
-Dalam berkas `next.config.ts` (atau `next.config.js`), gunakan pembungkus `defineNextConfig` untuk menyederhanakan validasi env dan aset gambar:
 
-```typescript
-import { defineNextConfig } from "ernext-config";
-
-export default defineNextConfig({
-  /* 
-  Opsi kustom Next.js Anda.
-  ernext-config secara otomatis menangani:
-  - Validasi env wajib
-  - Pembuatan remotePatterns untuk gambar
-  - Unoptimized gambar di localhost
-  - Batas ukuran upload & server action origins
-  - Pemetaan rewrite (/data/:path* -> NEXT_PUBLIC_API_URL)
-  */
-});
-```
-
-### Kustomisasi Opsi `defineNextConfig`
-
-Anda bisa meneruskan opsi konfigurasi Next.js standar, atau mengubah variabel env yang wajib divalidasi lewat opsi `requiredEnvs`:
-
-```typescript
-import { defineNextConfig } from "ernext-config";
-
-export default defineNextConfig({
-  requiredEnvs: ["NEXT_PUBLIC_API_URL", "CUSTOM_SECRET_KEY"],
-  reactStrictMode: true,
-  logging: {
-    fetches: {
-      fullUrl: true,
-    },
-  },
-});
-```
-
----
-
-## ⚙️ Integrasi Manual (Cadangan)
-
-Jika Anda memiliki struktur proyek kustom dan script setup melewati proses injeksi otomatis, Anda dapat menambahkannya secara manual:
-
-### 1. Perbarui `eslint.config.mjs`
-
-```javascript
-import { eslintConfig } from "ernext-config";
-
-export default [
-  ...eslintConfig, // <-- Tambahkan spread operator ini di awal array
-
-  // Konfigurasi kustom Anda yang lain...
-];
-```
-
-### 2. Perbarui `.vscode/settings.json`
-
-```json
-{
-  "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
-  "typescript.preferences.preferTypeOnlyAutoImports": true
-}
-```
-
----
 
 ## 📜 Standar Pemformatan yang Diterapkan
 
@@ -186,9 +119,13 @@ import type { ButtonProps } from "@/components/Button/interfaces";
 ### Konvensi Penamaan & Direktori
 
 - **Aturan Casing**:
-  - **`components/`**: PascalCase atau kebab-case (contoh: `Navbar.tsx`, `MSItem.tsx`, `footer/Footer.tsx`).
-  - **`hooks/`**: camelCase (contoh: `useVideoPlayer.ts`, `useAuth.ts`).
-  - **`utils/`**, **`contexts/`**, **`interfaces/`**: kebab-case atau camelCase (contoh: `axios-instance.tsx`, `item-data-map.ts`).
+  - **`components/`**: wajib **PascalCase** untuk berkas komponen (contoh: `Navbar.tsx`, `MSItem.tsx`, `Footer.tsx`). Nama folder di dalam komponen dapat berupa **PascalCase** atau **kebab-case** (contoh: `MarqueeSelection/` atau `providers/`).
+  - **`hooks/`**: wajib **camelCase** untuk berkas yang berawalan `use` (contoh: `useVideoPlayer.ts`, `useAuth.ts`), serta **kebab-case** untuk folder dan berkas non-hook lainnya (contoh: `interfaces.ts`, `index.ts`).
+  - **`contexts/`**:
+    - **`PascalCase`** untuk berkas komponen React Context Provider (contoh: `PopupProvider.tsx`, `PopupContext.tsx`).
+    - **`camelCase`** untuk custom hooks yang berawalan `use` (contoh: `usePopup.ts`).
+    - **`kebab-case`** untuk berkas lainnya (contoh: `interfaces.ts`, `popup-helper.ts`) serta seluruh nama folder (contoh: `popup/`, `bubble-menu/`).
+  - **`utils/`**, **`interfaces/`**, **`services/`**, **`lib/`**, **`types/`**, **`constants/`**, **`consts/`**: wajib **kebab-case** untuk berkas maupun folder (contoh: `get-hello-world.ts`, `boolean-state.ts`, `user-roles.ts`, `default-name.ts`).
 - **Struktur Direktori Interface & Type**:
   - **Berkas Tunggal (sedikit interface)**: Gunakan satu berkas `interfaces.ts` langsung di folder modul (contoh: `src/users/interfaces.ts`).
   - **Struktur Folder (banyak interface)**: Buat folder `interfaces/`, letakkan masing-masing berkas `*.interface.ts` atau `*.type.ts` di dalamnya, lalu ekspor semuanya melalui `interfaces/index.ts` menggunakan **named exports** (contoh: `export { User } from './user.interface';`). _Ekspor wildcard (`export _`) dilarang keras di dalam berkas index ini.\*

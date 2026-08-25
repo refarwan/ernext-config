@@ -14,10 +14,12 @@ The ultimate, zero-config Prettier, ESLint, and Next.js orchestrator. Standardiz
 - ⚡ **Auto-pilot Setup**: Installs required devDependencies, copies configuration templates, and configures VS Code settings automatically.
 - 📐 **Strict Type-only Imports**: Configures VS Code and ESLint to automatically rewrite `import type { ... }` for TS interfaces and types.
 - 📁 **Casing Conventions Enforcer**:
-  - **Components (`components/`)**: Enforces **PascalCase** or **kebab-case** for file and folder naming.
-  - **Hooks (`hooks/`)**: Enforces **camelCase** for filenames (e.g. `useActive.ts`).
-  - **Utils, contexts, interfaces, lib, services, types**: Enforces **kebab-case** or **camelCase**.
+  - **Components (`components/`)**: Enforces **PascalCase** for component files (e.g. `Navbar.tsx`), and **PascalCase** or **kebab-case** for folders.
+  - **Hooks (`hooks/`)**: Enforces **camelCase** for files starting with `use` (e.g. `useActive.ts`), and **kebab-case** for folders and other non-hook files.
+  - **Contexts (`contexts/`)**: Enforces **PascalCase** for providers, **camelCase** for hooks, and **kebab-case** for other files/folders.
+  - **Utils, interfaces, lib, services, types, constants, consts**: Enforces **kebab-case** for both files and folders (e.g. `get-hello-world.ts`, `default-name.ts`).
 - 🔮 **Smart Import Sorting**: Auto-sorts imports, separating logic and components into clear categories, and cleanly separating value imports from type-only imports.
+- 🎨 **Tailwind CSS Sorting**: Automatically sorts Tailwind CSS classes inside React components to ensure styling consistency.
 - 🌐 **Dynamic Next.js Orchestration**:
   - Validates required environment variables (e.g., `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_APP_URL`).
   - Parses image `remotePatterns` dynamically from API/CDN variables.
@@ -51,83 +53,14 @@ When you run `npx ernext-config`, the initialization script runs the following s
 
 1. **Copies `.prettierrc`**: Adds structured rules for Next.js import sorting and code formatting.
 2. **Configures VS Code Settings**: Safely merges standard settings into your `.vscode/settings.json` to enable type-only auto-imports.
-3. **Installs Dev Dependencies**: Installs the required plugins (`eslint-plugin-check-file`, `@ianvs/prettier-plugin-sort-imports`, `eslint-config-next`, `eslint-config-prettier`, etc.) to your local project.
-4. **Modifies `eslint.config.mjs`**: Automatically injects `eslintConfig` at the start of your ESLint Flat Config.
+3. **Installs Dev Dependencies**: Installs the required plugins (`eslint-plugin-check-file`, `@ianvs/prettier-plugin-sort-imports`, `prettier-plugin-tailwindcss`, `eslint-config-next`, `eslint-config-prettier`, etc.) to your local project.
+4. **Modifies `eslint.config.mjs`**: Automatically injects `eslintConfig` (as `ernextConfig`) at the start of your ESLint Flat Config.
 5. **Configures Scripts**: Adds or updates the `format` script in your `package.json` to automatically format all files using Prettier.
 6. **Initial Formatting & Linting**: Automatically runs a formatting pass (`npm run format`) followed by a lint check (`npm run lint`) to tidy up your codebase immediately.
 
----
 
-## 🛠️ Next.js Configuration (`defineNextConfig`)
 
-In `next.config.ts` (or `next.config.js`), use the `defineNextConfig` wrapper to simplify environment checks and asset configurations:
 
-```typescript
-import { defineNextConfig } from "ernext-config";
-
-export default defineNextConfig({
-  /* 
-  Custom Next.js options.
-  ernext-config handles:
-  - Required env validation
-  - Images remote patterns parsing
-  - Localhost unoptimized images
-  - Max body size & server action origins
-  - Rewrite mapping (/data/:path* -> NEXT_PUBLIC_API_URL)
-  */
-});
-```
-
-### Next.js Config Options (Customizable)
-
-You can pass standard Next.js options, or configure `requiredEnvs` to change validated environment variables:
-
-```typescript
-import { defineNextConfig } from "ernext-config";
-
-export default defineNextConfig({
-  requiredEnvs: ["NEXT_PUBLIC_API_URL", "CUSTOM_SECRET_KEY"],
-  reactStrictMode: true,
-  logging: {
-    fetches: {
-      fullUrl: true,
-    },
-  },
-});
-```
-
----
-
-## ⚙️ Manual Integration (Fallback)
-
-If you have a customized setup and the script skips automatic injection, you can add it manually:
-
-### 1. Update `eslint.config.mjs`
-
-```javascript
-import { eslintConfig } from "ernext-config";
-
-export default [
-  ...eslintConfig, // <-- Add this spread operator at the start
-  
-  // Your other custom configurations...
-];
-```
-
-### 2. Update `.vscode/settings.json`
-
-```json
-{
-  "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
-  "typescript.preferences.preferTypeOnlyAutoImports": true
-}
-```
-
----
 
 ## 📜 Formatting Standards Applied
 
@@ -179,9 +112,13 @@ import type { ButtonProps } from "@/components/Button/interfaces";
 
 ### Naming & Directory Conventions
 - **Casing Rules**: 
-  - **`components/`**: PascalCase or kebab-case (e.g. `Navbar.tsx`, `MSItem.tsx`, `footer/Footer.tsx`).
-  - **`hooks/`**: camelCase (e.g. `useVideoPlayer.ts`, `useAuth.ts`).
-  - **`utils/`**, **`contexts/`**, **`interfaces/`**: kebab-case or camelCase (e.g. `axios-instance.tsx`, `item-data-map.ts`).
+  - **`components/`**: strictly **PascalCase** for component files (e.g. `Navbar.tsx`, `MSItem.tsx`, `Footer.tsx`). Folder names inside components can be **PascalCase** or **kebab-case** (e.g. `MarqueeSelection/` or `providers/`).
+  - **`hooks/`**: **camelCase** for files starting with `use` (e.g. `useVideoPlayer.ts`, `useAuth.ts`), and **kebab-case** for folders and other non-hook files (e.g. `interfaces.ts`, `index.ts`).
+  - **`contexts/`**:
+    - **`PascalCase`** for React Context Provider component files (e.g. `PopupProvider.tsx`, `PopupContext.tsx`).
+    - **`camelCase`** for custom hooks starting with `use` (e.g. `usePopup.ts`).
+    - **`kebab-case`** for other files (e.g. `interfaces.ts`, `popup-helper.ts`) and all folders (e.g. `popup/`, `bubble-menu/`).
+  - **`utils/`**, **`interfaces/`**, **`services/`**, **`lib/`**, **`types/`**, **`constants/`**, **`consts/`**: strictly **kebab-case** for both files and folders (e.g. `get-hello-world.ts`, `boolean-state.ts`, `user-roles.ts`, `default-name.ts`).
 - **Interfaces & Types Directory Structure**:
   - **Single file (few interfaces)**: Use a single `interfaces.ts` file directly in the module folder (e.g. `src/users/interfaces.ts`).
   - **Folder structure (multiple interfaces)**: Create an `interfaces/` folder, place individual `*.interface.ts` or `*.type.ts` files inside, and export them all from `interfaces/index.ts` using **named exports** (e.g. `export { User } from './user.interface';`). *Wildcard exports (`export *`) are strictly forbidden inside these index files.*

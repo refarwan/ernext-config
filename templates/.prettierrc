@@ -3,8 +3,12 @@
     "singleQuote": false,
     "tabWidth": 4,
     "plugins": [
-        "prettier-plugin-tailwindcss",
-        "@ianvs/prettier-plugin-sort-imports"
+        "@ianvs/prettier-plugin-sort-imports",
+        "prettier-plugin-tailwindcss"
+    ],
+    "importOrderSafeSideEffects": [
+        "^[./].*\\.css$",
+        "^@/.*\\.css$"
     ],
     "importOrder": [
         "// --- 1. VALUE IMPORTS (KODE LOGIKA) ---",

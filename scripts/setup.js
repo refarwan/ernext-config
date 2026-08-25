@@ -21,6 +21,22 @@ function setupProject() {
     if (fs.existsSync(templatePrettier)) {
       fs.copyFileSync(templatePrettier, targetPrettier);
       console.log("✅ File .prettierrc berhasil di-copy ke project Next.js!");
+
+      // Tambahkan konfigurasi tailwindStylesheet secara dinamis untuk Tailwind CSS v4
+      try {
+        const rc = JSON.parse(fs.readFileSync(targetPrettier, "utf8"));
+        if (fs.existsSync(path.join(targetDir, "src/app/globals.css"))) {
+          rc.tailwindStylesheet = "./src/app/globals.css";
+        } else if (fs.existsSync(path.join(targetDir, "app/globals.css"))) {
+          rc.tailwindStylesheet = "./app/globals.css";
+        } else {
+          rc.tailwindStylesheet = "./app/globals.css"; // Default fallback
+        }
+        fs.writeFileSync(targetPrettier, JSON.stringify(rc, null, 4), "utf8");
+        console.log(`✅ Mengatur tailwindStylesheet ke "${rc.tailwindStylesheet}" di .prettierrc!`);
+      } catch (err) {
+        console.warn("⚠️ Gagal menyisipkan tailwindStylesheet secara otomatis:", err.message);
+      }
     } else {
       console.error("❌ Template .prettierrc tidak ditemukan!");
     }
@@ -88,51 +104,80 @@ function setupProject() {
     const eslintConfigPath = path.join(targetDir, "eslint.config.mjs");
     if (fs.existsSync(eslintConfigPath)) {
       let content = fs.readFileSync(eslintConfigPath, "utf8");
+      let modified = false;
 
-      // Cek apakah sudah pernah diinjeksi
-      if (!content.includes("ernext-config")) {
-        // Prepend import di awal berkas
-        content = "import { eslintConfig } from 'ernext-config';\n" + content;
+      // 4.1. Cek & perbaiki impor
+      if (content.includes("import { eslintConfig } from \"ernext-config\"") || 
+          content.includes("import { eslintConfig } from 'ernext-config'")) {
+        content = content.replace("eslintConfig } from \"ernext-config\"", "eslintConfig as ernextConfig } from \"ernext-config\"");
+        content = content.replace("eslintConfig } from 'ernext-config'", "eslintConfig as ernextConfig } from 'ernext-config'");
+        modified = true;
+        console.log("🔄 Mengubah impor eslintConfig ke alias aman ernextConfig...");
+      } else if (!content.includes("ernext-config")) {
+        content = "import { eslintConfig as ernextConfig } from 'ernext-config';\n" + content;
+        modified = true;
+        console.log("✅ Menambahkan impor ernextConfig di eslint.config.mjs...");
+      }
 
-        // Injeksi ...eslintConfig
+      // 4.2. Cek & perbaiki spread operator
+      if (!content.includes("...ernextConfig") && !content.includes("...eslintConfig")) {
+        // Lakukan injeksi
         if (content.includes("const eslintConfig = [")) {
-          const index = content.indexOf("const eslintConfig = [");
-          const lastIndex = content.indexOf("];", index);
+          const lastIndex = content.lastIndexOf("];");
           if (lastIndex !== -1) {
             const prefix = content.slice(0, lastIndex);
             const comma = prefix.trim().endsWith(",") ? "" : ",";
-            content = prefix + `${comma}\n  ...eslintConfig\n` + content.slice(lastIndex);
-            console.log("✅ Berhasil menginjeksi eslintConfig di dalam variabel eslintConfig di eslint.config.mjs!");
+            content = prefix + `${comma}\n  ...ernextConfig\n` + content.slice(lastIndex);
+            modified = true;
+            console.log("✅ Berhasil menginjeksi ernextConfig di dalam variabel eslintConfig!");
+          }
+        } else if (content.includes("defineConfig([")) {
+          const lastIndex = content.lastIndexOf("]);");
+          if (lastIndex !== -1) {
+            const prefix = content.slice(0, lastIndex);
+            const comma = prefix.trim().endsWith(",") ? "" : ",";
+            content = prefix + `${comma}\n  ...ernextConfig\n` + content.slice(lastIndex);
+            modified = true;
+            console.log("✅ Berhasil menginjeksi ernextConfig di dalam defineConfig!");
           }
         } else if (content.includes("export default tseslint.config(")) {
           const lastIndex = content.lastIndexOf(");");
           if (lastIndex !== -1) {
             const prefix = content.slice(0, lastIndex);
             const comma = prefix.trim().endsWith(",") ? "" : ",";
-            content = prefix + `${comma}\n  ...eslintConfig\n` + content.slice(lastIndex);
-            console.log("✅ Berhasil menginjeksi eslintConfig di akhir tseslint.config di eslint.config.mjs!");
+            content = prefix + `${comma}\n  ...ernextConfig\n` + content.slice(lastIndex);
+            modified = true;
+            console.log("✅ Berhasil menginjeksi ernextConfig di akhir tseslint.config!");
           }
         } else if (content.includes("export default [")) {
           const lastIndex = content.lastIndexOf("];");
           if (lastIndex !== -1) {
             const prefix = content.slice(0, lastIndex);
             const comma = prefix.trim().endsWith(",") ? "" : ",";
-            content = prefix + `${comma}\n  ...eslintConfig\n` + content.slice(lastIndex);
-            console.log("✅ Berhasil menginjeksi eslintConfig di akhir array export default di eslint.config.mjs!");
+            content = prefix + `${comma}\n  ...ernextConfig\n` + content.slice(lastIndex);
+            modified = true;
+            console.log("✅ Berhasil menginjeksi ernextConfig di akhir array export default!");
           }
         } else {
           console.log("\n⚠️ Pola export default tidak dikenali.");
           console.log("Silakan tambahkan secara manual di eslint.config.mjs:");
-          console.log("  ...eslintConfig,");
+          console.log("  ...ernextConfig,");
         }
+      } else if (content.includes("...eslintConfig")) {
+        // Ganti ...eslintConfig dengan ...ernextConfig untuk keselarasan alias
+        content = content.replace(/\.\.\.eslintConfig\b/g, "...ernextConfig");
+        modified = true;
+        console.log("🔄 Berhasil memigrasi spread operator ...eslintConfig ke ...ernextConfig!");
+      }
 
+      if (modified) {
         fs.writeFileSync(eslintConfigPath, content, "utf8");
       } else {
-        console.log("ℹ️ eslintConfig sudah terdaftar di eslint.config.mjs.");
+        console.log("ℹ️ ernext-config sudah terintegrasi penuh di eslint.config.mjs.");
       }
     } else {
       // Jika file tidak ada, buat baru
-      const defaultEslintConfig = `import { eslintConfig } from "ernext-config";\n\nexport default [\n  ...eslintConfig,\n];\n`;
+      const defaultEslintConfig = `import { eslintConfig as ernextConfig } from "ernext-config";\n\nexport default [\n  ...ernextConfig,\n];\n`;
       fs.writeFileSync(eslintConfigPath, defaultEslintConfig, "utf8");
       console.log("✅ File eslint.config.mjs baru berhasil dibuat!");
     }
@@ -148,7 +193,7 @@ function setupProject() {
       if (!targetPkgJson.scripts) {
         targetPkgJson.scripts = {};
       }
-      targetPkgJson.scripts.format = 'prettier --write "app/**/*.{js,jsx,ts,tsx}" "components/**/*.{js,jsx,ts,tsx}" "contexts/**/*.{js,jsx,ts,tsx}" "hooks/**/*.{js,jsx,ts,tsx}" "utils/**/*.{js,jsx,ts,tsx}" "pages/**/*.{js,jsx,ts,tsx}" "*.{js,mjs,json}"';
+      targetPkgJson.scripts.format = 'prettier --write --no-error-on-unmatched-pattern "app/**/*.{js,jsx,ts,tsx}" "components/**/*.{js,jsx,ts,tsx}" "contexts/**/*.{js,jsx,ts,tsx}" "hooks/**/*.{js,jsx,ts,tsx}" "utils/**/*.{js,jsx,ts,tsx}" "pages/**/*.{js,jsx,ts,tsx}" "*.{js,mjs,json,ts}"';
       fs.writeFileSync(targetPkgJsonPath, JSON.stringify(targetPkgJson, null, 2), "utf8");
       console.log("✅ Script 'format' berhasil ditambahkan/diperbarui di package.json!");
     }
