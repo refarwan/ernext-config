@@ -1,0 +1,46 @@
+{
+    "trailingComma": "all",
+    "singleQuote": false,
+    "tabWidth": 4,
+    "plugins": [
+        "prettier-plugin-tailwindcss",
+        "@ianvs/prettier-plugin-sort-imports"
+    ],
+    "importOrder": [
+        "// --- 1. VALUE IMPORTS (KODE LOGIKA) ---",
+        "<BUILTIN_MODULES>",
+        "",
+        "<THIRD_PARTY_MODULES>",
+        "",
+        "// --- 1.1 Aliased Logic / Functions / Utils ---",
+        "^@/([Uu]tils|[Hh]ooks|[Hh]elpers|[Ss]ervices|[Ll]ibs?|[Aa]pis?|[Cc]ontexts?|[Ss]tores?|[Aa]ctions|[Rr]educers)(/.*)?$",
+        "",
+        "// --- 1.2 Local Logic / Functions / Utils ---",
+        "^[./].*([Uu]tils|[Hh]ooks|[Hh]elpers|[Ss]ervices|[Ll]ibs?|[Aa]pis?|[Cc]ontexts?|[Ss]tores?|[Aa]ctions|[Rr]educers)(/.*)?$",
+        "",
+        "// --- 1.3 Aliased Components & Others ---",
+        "^@/",
+        "",
+        "// --- 1.4 Local Components & Others ---",
+        "^[./]",
+        "",
+        "// --- 2. TYPE IMPORTS (INTERFACE / TYPES) ---",
+        "<TYPES><BUILTIN_MODULES>",
+        "",
+        "<TYPES>",
+        "",
+        "<TYPES>^@/([Uu]tils|[Hh]ooks|[Hh]elpers|[Ss]ervices|[Ll]ibs?|[Aa]pis?|[Cc]ontexts?|[Ss]tores?|[Aa]ctions|[Rr]educers)(/.*)?$",
+        "",
+        "<TYPES>^[./].*([Uu]tils|[Hh]ooks|[Hh]elpers|[Ss]ervices|[Ll]ibs?|[Aa]pis?|[Cc]ontexts?|[Ss]tores?|[Aa]ctions|[Rr]educers)(/.*)?$",
+        "",
+        "<TYPES>^@/",
+        "",
+        "<TYPES>^[./]"
+    ],
+    "importOrderParserPlugins": [
+        "typescript",
+        "jsx",
+        "decorators-legacy",
+        "classProperties"
+    ]
+}

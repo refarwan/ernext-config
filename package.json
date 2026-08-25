@@ -1,0 +1,32 @@
+{
+  "name": "ernext-config",
+  "version": "1.0.0",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "bin": {
+    "ernext-config": "./scripts/setup.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/refarwan/ernext-config.git"
+  },
+  "homepage": "https://www.refarwan.com",
+  "bugs": {
+    "url": "https://github.com/refarwan/ernext-config/issues"
+  },
+  "author": "Aan Refarwan",
+  "license": "MIT",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "templates",
+    "scripts"
+  ],
+  "peerDependencies": {
+    "eslint": ">=8.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "typescript": "^5.0.0"
+  }
+}
