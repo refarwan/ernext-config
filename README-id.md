@@ -1,6 +1,6 @@
 # 🚀 ernext-config
 
-Terjemahan: [English](README.md) | [Bahasa Indonesia](README-id.md)
+Terjemahan: [English](https://github.com/refarwan/ernext-config/blob/main/README.md) | [Bahasa Indonesia](https://github.com/refarwan/ernext-config/blob/main/README-id.md)
 
 [![npm version](https://img.shields.io/npm/v/ernext-config.svg?style=flat-flat&color=3399ff)](https://www.npmjs.com/package/ernext-config)
 [![license](https://img.shields.io/npm/l/ernext-config.svg?style=flat-flat&color=47d147)](https://github.com/refarwan/ernext-config)
@@ -128,13 +128,13 @@ import type { ButtonProps } from "@/components/Button/interfaces";
   - **`utils/`**, **`interfaces/`**, **`services/`**, **`lib/`**, **`types/`**, **`constants/`**, **`consts/`**: wajib **kebab-case** untuk berkas maupun folder (contoh: `get-hello-world.ts`, `boolean-state.ts`, `user-roles.ts`, `default-name.ts`).
 - **Struktur Direktori Interface & Type**:
   - **Berkas Tunggal (sedikit interface)**: Gunakan satu berkas `interfaces.ts` langsung di folder modul (contoh: `src/users/interfaces.ts`).
-  - **Struktur Folder (banyak interface)**: Buat folder `interfaces/`, letakkan masing-masing berkas `*.interface.ts` atau `*.type.ts` di dalamnya, lalu ekspor semuanya melalui `interfaces/index.ts` menggunakan **named exports** (contoh: `export { User } from './user.interface';`). _Ekspor wildcard (`export _`) dilarang keras di dalam berkas index ini.\*
+  - **Struktur Folder (banyak interface)**: Buat folder `interfaces/`, letakkan masing-masing berkas `*.interface.ts` atau `*.type.ts` di dalamnya, lalu ekspor semuanya melalui `interfaces/index.ts` menggunakan **named exports** (contoh: `export { User } from './user.interface';`). *Ekspor wildcard (`export *`) dilarang keras di seluruh berkas sumber (kecuali folder `generated`).*
 - **Struktur Direktori Function & Util**:
   - **Berkas Tunggal (sedikit utilitas)**: Gunakan satu berkas `utils.ts` langsung di folder modul (contoh: `src/users/utils.ts`).
-  - **Struktur Folder (banyak utilitas)**: Buat folder `utils/`, letakkan masing-masing berkas `*.util.ts` atau `*.function.ts` di dalamnya, lalu ekspor semuanya melalui `utils/index.ts` menggunakan **named exports** (contoh: `export { formatDate } from './format-date.util';`). _Ekspor wildcard (`export _`) dilarang keras di dalam berkas index ini.\*
+  - **Struktur Folder (banyak utilitas)**: Buat folder `utils/`, letakkan masing-masing berkas `*.util.ts` atau `*.function.ts` di dalamnya, lalu ekspor semuanya melalui `utils/index.ts` menggunakan **named exports** (contoh: `export { formatDate } from './format-date.util';`). *Ekspor wildcard (`export *`) dilarang keras di seluruh berkas sumber (kecuali folder `generated`).*
 - **Struktur Direktori Constant & Enum**:
   - **Berkas Tunggal (sedikit konstanta)**: Gunakan satu berkas `constants.ts` langsung di folder modul (contoh: `src/users/constants.ts`).
-  - **Struktur Folder (banyak konstanta)**: Buat folder `constants/`, letakkan masing-masing berkas `*.constant.ts` or `*.enum.ts` di dalamnya, lalu ekspor semuanya melalui `constants/index.ts` menggunakan **named exports** (contoh: `export { USER_ROLES } from './user-roles.constant';`). _Ekspor wildcard (`export _`) dilarang keras di dalam berkas index ini.\*
+  - **Struktur Folder (banyak konstanta)**: Buat folder `constants/`, letakkan masing-masing berkas `*.constant.ts` or `*.enum.ts` di dalamnya, lalu ekspor semuanya melalui `constants/index.ts` menggunakan **named exports** (contoh: `export { USER_ROLES } from './user-roles.constant';`). *Ekspor wildcard (`export *`) dilarang keras di seluruh berkas sumber (kecuali folder `generated`).*
 
 ---
 

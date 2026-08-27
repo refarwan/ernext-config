@@ -23,6 +23,9 @@ try {
 }
 
 const eslintConfig = [
+  {
+    ignores: ["**/generated/**/*"],
+  },
   ...nextVitals,
   ...nextTs,
   eslintPluginPrettierRecommended,
@@ -80,19 +83,14 @@ const eslintConfig = [
     },
   },
   {
-    files: [
-      "**/interfaces/index.ts",
-      "**/utils/index.ts",
-      "**/constants/index.ts",
-      "**/consts/index.ts",
-    ],
+    files: ["**/*.ts", "**/*.tsx"],
     rules: {
       "no-restricted-syntax": [
         "error",
         {
           selector: "ExportAllDeclaration",
           message:
-            "Wildcard exports (export * from '...') are not allowed in interfaces/utils/constants index.ts files. Please use named exports instead: export { Name } from './file';",
+            "Wildcard exports (export *) are not allowed. Please export specific members instead.",
         },
       ],
     },
