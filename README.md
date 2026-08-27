@@ -119,6 +119,7 @@ import type { ButtonProps } from "@/components/Button/interfaces";
     - **`camelCase`** for custom hooks starting with `use` (e.g. `usePopup.ts`).
     - **`kebab-case`** for other files (e.g. `interfaces.ts`, `popup-helper.ts`) and all folders (e.g. `popup/`, `bubble-menu/`).
   - **`utils/`**, **`interfaces/`**, **`services/`**, **`lib/`**, **`types/`**, **`constants/`**, **`consts/`**: strictly **kebab-case** for both files and folders (e.g. `get-hello-world.ts`, `boolean-state.ts`, `user-roles.ts`, `default-name.ts`).
+  - **Others (Default)**: All other files and folders not specified above must default to **kebab-case** (e.g. `app/tests/test-file.ts`).
 - **Interfaces & Types Directory Structure**:
   - **Single file (few interfaces)**: Use a single `interfaces.ts` file directly in the module folder (e.g. `src/users/interfaces.ts`).
   - **Folder structure (multiple interfaces)**: Create an `interfaces/` folder, place individual `*.interface.ts` or `*.type.ts` files inside, and export them all from `interfaces/index.ts` using **named exports** (e.g. `export { User } from './user.interface';`). *Wildcard exports (`export *`) are strictly forbidden in all source files (except the `generated` folder).*

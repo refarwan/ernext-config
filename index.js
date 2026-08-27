@@ -83,6 +83,26 @@ const eslintConfig = [
     },
   },
   {
+    files: ["**/*.{js,jsx,ts,tsx}"],
+    ignores: [
+      "**/components/**/*.{tsx,jsx}",
+      "**/contexts/**/*.tsx",
+      "**/contexts/**/*.jsx",
+      "**/use*.{ts,js}",
+    ],
+    rules: {
+      "check-file/filename-naming-convention": [
+        "error",
+        {
+          "**/*.{js,jsx,ts,tsx}": "KEBAB_CASE",
+        },
+        {
+          ignoreMiddleExtensions: true,
+        },
+      ],
+    },
+  },
+  {
     files: ["**/*.ts", "**/*.tsx"],
     rules: {
       "no-restricted-syntax": [

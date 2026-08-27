@@ -126,6 +126,7 @@ import type { ButtonProps } from "@/components/Button/interfaces";
     - **`camelCase`** untuk custom hooks yang berawalan `use` (contoh: `usePopup.ts`).
     - **`kebab-case`** untuk berkas lainnya (contoh: `interfaces.ts`, `popup-helper.ts`) serta seluruh nama folder (contoh: `popup/`, `bubble-menu/`).
   - **`utils/`**, **`interfaces/`**, **`services/`**, **`lib/`**, **`types/`**, **`constants/`**, **`consts/`**: wajib **kebab-case** untuk berkas maupun folder (contoh: `get-hello-world.ts`, `boolean-state.ts`, `user-roles.ts`, `default-name.ts`).
+  - **Lainnya (Default)**: Seluruh berkas dan folder lainnya yang tidak disebutkan di atas secara default wajib menggunakan **kebab-case** (contoh: `app/tests/test-file.ts`).
 - **Struktur Direktori Interface & Type**:
   - **Berkas Tunggal (sedikit interface)**: Gunakan satu berkas `interfaces.ts` langsung di folder modul (contoh: `src/users/interfaces.ts`).
   - **Struktur Folder (banyak interface)**: Buat folder `interfaces/`, letakkan masing-masing berkas `*.interface.ts` atau `*.type.ts` di dalamnya, lalu ekspor semuanya melalui `interfaces/index.ts` menggunakan **named exports** (contoh: `export { User } from './user.interface';`). *Ekspor wildcard (`export *`) dilarang keras di seluruh berkas sumber (kecuali folder `generated`).*
