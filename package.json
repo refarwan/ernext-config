@@ -1,10 +1,10 @@
 {
   "name": "ernext-config",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "main": "index.js",
   "types": "index.d.ts",
   "bin": {
-    "ernext-config": "./scripts/setup.js"
+    "ernext-config": "scripts/setup.js"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,8 @@
   },
   "devDependencies": {
     "eslint": "^9.0.0",
+    "eslint-plugin-check-file": "^2.8.0",
+    "eslint-plugin-tailwindcss": "^3.18.0",
     "typescript": "^5.0.0"
   }
 }

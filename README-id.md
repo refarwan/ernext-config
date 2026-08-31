@@ -5,21 +5,26 @@ Terjemahan: [English](https://github.com/refarwan/ernext-config/blob/main/README
 [![npm version](https://img.shields.io/npm/v/ernext-config.svg?style=flat-flat&color=3399ff)](https://www.npmjs.com/package/ernext-config)
 [![license](https://img.shields.io/npm/l/ernext-config.svg?style=flat-flat&color=47d147)](https://github.com/refarwan/ernext-config)
 
-Orkestrator Prettier, ESLint, dan Next.js terbaik tanpa konfigurasi ribet. Standardisasi format kode Anda, paksakan penggunaan type-only import, kelola casing penamaan React (Components, Hooks, Utils) dengan ketat, dan jalankan konfigurasi otomatis Next.js (validasi env, RemotePatterns gambar, dan rewrites API) dalam hitungan detik.
+Orkestrator Prettier, ESLint, Tailwind CSS v4, dan Next.js terbaik tanpa konfigurasi ribet. Standardisasi format kode Anda, paksakan penggunaan type-only import, konversi otomatis arbitrary piksel ke utility Tailwind v4, kelola casing penamaan React (Components, Hooks, Utils) dengan ketat, dan jalankan konfigurasi otomatis Next.js (validasi env, RemotePatterns gambar, dan rewrites API) dalam hitungan detik.
 
 ---
 
 ## ✨ Fitur
 
-- ⚡ **Setup Otomatis**: Memasang semua devDependencies, menyalin template konfigurasi, dan mengatur setelan VS Code secara otomatis.
+- ⚡ **Setup Otomatis**: Memasang semua devDependencies, menyalin template konfigurasi, dan mengatur setelan `.vscode` serta rekomendasi ekstensi secara otomatis.
 - 📐 **Paksakan Type-only Import**: Mengonfigurasi VS Code dan ESLint untuk otomatis menulis `import type { ... }` pada interface dan type.
+- 🎯 **Konverter Tailwind CSS v4 Px-ke-Rem Otomatis**:
+  - Mengonversi otomatis utility arbitrary piksel (contoh: `w-[100px]` $\rightarrow$ `w-25`, `w-[111px]` $\rightarrow$ `w-27.75`, `p-[15px]` $\rightarrow$ `p-3.75`, `gap-[6px]` $\rightarrow$ `gap-1.5`) menjadi unit Tailwind CSS v4 (bilangan bulat maupun pecahan) saat menyimpan berkas atau menjalankan format.
+- 🛡️ **Deteksi Konflik Tailwind yang Akurat**:
+  - Mengintegrasikan `eslint-plugin-tailwindcss` untuk mendeteksi bentrok class nyata secara akurat tanpa peringatan palsu pada pseudo-element (seperti `text-slate-800 placeholder:text-gray-400`).
+  - Mengatur `.vscode/settings.json` untuk menonaktifkan linter ekstensi bawaan yang sering salah deteksi dan menyerahkan akurasi sepenuhnya ke ESLint.
 - 📁 **Konvensi Casing Ketat**:
   - **Components (`components/`)**: Mewajibkan **PascalCase** untuk file komponen (contoh: `Navbar.tsx`), dan **PascalCase** atau **kebab-case** untuk folder.
   - **Hooks (`hooks/`)**: Mewajibkan **camelCase** untuk file yang diawali `use` (contoh: `useActive.ts`), serta **kebab-case** untuk folder dan file non-hook lainnya.
   - **Contexts (`contexts/`)**: Mewajibkan **PascalCase** untuk provider, **camelCase** untuk hook, dan **kebab-case** untuk file/folder lainnya.
   - **Utils, interfaces, lib, services, types, constants, consts**: Mewajibkan **kebab-case** untuk file maupun folder (contoh: `get-hello-world.ts`, `default-name.ts`).
 - 🔮 **Pengurutan Impor Cerdas**: Mengurutkan impor secara otomatis, memisahkan impor modul logika dan tipe data ke dalam kategori yang jelas.
-- 🎨 **Pengurutan Kelas Tailwind CSS**: Mengurutkan kelas-kelas Tailwind CSS secara otomatis pada berkas React/Next.js untuk menjaga visual styling yang konsisten.
+- 🎨 **Pengurutan Kelas Tailwind CSS**: Mengurutkan kelas-kelas Tailwind CSS secara otomatis pada berkas React/Next.js menggunakan Prettier tanpa mengganggu proses coding dengan pesan error inline ESLint.
 - 🌐 **Orkestrasi Next.js Dinamis**:
   - Validasi variabel lingkungan (`NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_APP_URL`, dll.).
   - Mengonfigurasi RemotePatterns gambar secara otomatis dari variabel API/CDN.
@@ -45,7 +50,7 @@ _Tidak perlu melakukan instalasi awal! Script setup akan secara otomatis mengatu
 
 > [!IMPORTANT]
 > **Rekomendasi Ekstensi Editor**:
-> Untuk pengalaman terbaik di VS Code atau Antigravity IDE, pastikan Anda telah menginstal ekstensi resmi [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) and [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode). Ekstensi ini diperlukan agar linting real-time, pemformatan otomatis saat menyimpan (_format on save_), dan type-only import otomatis dapat berfungsi secara maksimal.
+> Untuk pengalaman terbaik di VS Code atau Antigravity IDE, pastikan Anda telah menginstal ekstensi resmi [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint), [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode), dan [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) (yang otomatis direkomendasikan di `.vscode/extensions.json`).
 
 ---
 
@@ -53,16 +58,16 @@ _Tidak perlu melakukan instalasi awal! Script setup akan secara otomatis mengatu
 
 Saat Anda menjalankan `npx ernext-config`, script inisialisasi akan mengeksekusi langkah-langkah berikut di folder root proyek Anda:
 
-1. **Menyalin `.prettierrc`**: Menyediakan aturan terstruktur untuk pengurutan impor dan pemformatan kode Next.js.
-2. **Mengonfigurasi Pengaturan VS Code**: Menggabungkan konfigurasi secara aman ke dalam `.vscode/settings.json` Anda untuk mengaktifkan fitur type-only auto-imports.
-3. **Menginstal Dev Dependencies**: Memasang plugin yang diperlukan (`eslint-plugin-check-file`, `@ianvs/prettier-plugin-sort-imports`, `prettier-plugin-tailwindcss`, `eslint-config-next`, `eslint-config-prettier`, dll.) ke dalam proyek lokal Anda.
+1. **Menyalin `.prettierrc`**: Menyediakan aturan terstruktur untuk pengurutan impor dan pemformatan Tailwind CSS.
+2. **Mengonfigurasi Template `.vscode`**:
+   - Menggabungkan konfigurasi secara aman ke dalam `.vscode/settings.json` (mengaktifkan type-only auto-imports, `source.fixAll.eslint` saat save, dan opsi lint Tailwind v4).
+   - Membuat file `.vscode/extensions.json` berisi rekomendasi ekstensi workspace.
+3. **Menginstal Dev Dependencies**: Memasang plugin yang diperlukan (`eslint-plugin-check-file`, `eslint-plugin-tailwindcss`, `@ianvs/prettier-plugin-sort-imports`, `prettier-plugin-tailwindcss`, `eslint-config-next`, `eslint-config-prettier`, dll.) ke dalam proyek lokal Anda.
 4. **Memodifikasi `eslint.config.mjs`**: Secara otomatis menyisipkan aturan `eslintConfig` (sebagai `ernextConfig`) pada awal konfigurasi ESLint Flat Config Anda.
-5. **Mengonfigurasi Script**: Menambahkan atau memperbarui script `format` pada `package.json` target untuk pemformatan otomatis berkas menggunakan Prettier.
+5. **Mengonfigurasi Script**: Menambahkan atau memperbarui script `lint`, `lint:fix`, dan `format` pada `package.json` target untuk pemeriksaan dan perbaikan otomatis kode.
 6. **Pemformatan & Linting Awal**: Menjalankan format perdana (`npm run format`) diikuti pemeriksaan lint (`npm run lint`) untuk merapikan kode secara langsung.
 
-
-
-
+---
 
 ## 📜 Standar Pemformatan yang Diterapkan
 

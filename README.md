@@ -5,28 +5,33 @@ Translations: [English](https://github.com/refarwan/ernext-config/blob/main/READ
 [![npm version](https://img.shields.io/npm/v/ernext-config.svg?style=flat-flat&color=3399ff)](https://www.npmjs.com/package/ernext-config)
 [![license](https://img.shields.io/npm/l/ernext-config.svg?style=flat-flat&color=47d147)](https://github.com/refarwan/ernext-config)
 
-The ultimate, zero-config Prettier, ESLint, and Next.js orchestrator. Standardize your code formatting, enforce type-only imports, manage strict casing conventions, and dynamically configure Next.js environment checks, proxies, and asset domains in seconds.
+The ultimate, zero-config Prettier, ESLint, Tailwind CSS v4, and Next.js orchestrator. Standardize your code formatting, enforce type-only imports, manage strict casing conventions, auto-convert pixel units to native Tailwind v4 values, resolve class conflicts accurately, and dynamically configure Next.js environment checks, proxies, and asset domains in seconds.
 
 ---
 
 ## ✨ Features
 
-- ⚡ **Auto-pilot Setup**: Installs required devDependencies, copies configuration templates, and configures VS Code settings automatically.
+- ⚡ **Auto-pilot Setup**: Installs required devDependencies, copies configuration templates, and configures `.vscode` settings and recommended extensions automatically.
 - 📐 **Strict Type-only Imports**: Configures VS Code and ESLint to automatically rewrite `import type { ... }` for TS interfaces and types.
+- 🎯 **Tailwind CSS v4 Px-to-Rem Converter**:
+  - Automatically converts arbitrary pixel utilities (e.g. `w-[100px]` $\rightarrow$ `w-25`, `w-[111px]` $\rightarrow$ `w-27.75`, `p-[15px]` $\rightarrow$ `p-3.75`, `gap-[6px]` $\rightarrow$ `gap-1.5`) into modern Tailwind CSS v4 fractional and integer units upon saving or formatting.
+- 🛡️ **Accurate Tailwind Linting & Conflict Detection**:
+  - Integrates `eslint-plugin-tailwindcss` to catch real conflicting utility classes without false-positive warnings on pseudo-elements (like `text-slate-800 placeholder:text-gray-400`).
+  - Pre-configures `.vscode/settings.json` to silence flawed extension linter conflicts while delegating full accuracy to ESLint.
 - 📁 **Casing Conventions Enforcer**:
   - **Components (`components/`)**: Enforces **PascalCase** for component files (e.g. `Navbar.tsx`), and **PascalCase** or **kebab-case** for folders.
   - **Hooks (`hooks/`)**: Enforces **camelCase** for files starting with `use` (e.g. `useActive.ts`), and **kebab-case** for folders and other non-hook files.
   - **Contexts (`contexts/`)**: Enforces **PascalCase** for providers, **camelCase** for hooks, and **kebab-case** for other files/folders.
   - **Utils, interfaces, lib, services, types, constants, consts**: Enforces **kebab-case** for both files and folders (e.g. `get-hello-world.ts`, `default-name.ts`).
 - 🔮 **Smart Import Sorting**: Auto-sorts imports, separating logic and components into clear categories, and cleanly separating value imports from type-only imports.
-- 🎨 **Tailwind CSS Sorting**: Automatically sorts Tailwind CSS classes inside React components to ensure styling consistency.
+- 🎨 **Tailwind CSS Sorting**: Automatically sorts Tailwind CSS classes inside React components using Prettier to ensure styling consistency without distracting inline ESLint errors.
 - 🌐 **Dynamic Next.js Orchestration**:
   - Validates required environment variables (e.g., `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_APP_URL`).
   - Parses image `remotePatterns` dynamically from API/CDN variables.
   - Enables unoptimized image processing automatically on `localhost`.
   - Configures allowed origins for Server Actions and middleware client max body sizes.
   - Generates proxy rewrites (`/data/:path*` to API URL) automatically.
-- 🛠️ **Idempotent Setup Script**: Won't corrupt or duplicate imports if run multiple times.
+- 🛠️ **Idempotent Setup Script**: Won't corrupt or duplicate imports or configurations if run multiple times.
 
 ---
 
@@ -43,7 +48,7 @@ npx ernext-config
 
 > [!IMPORTANT]
 > **Editor Extensions Recommended**:
-> For the best experience in VS Code or Antigravity IDE, ensure you have installed the official [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) and [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) extensions. This enables real-time linting, format-on-save, and automatic type-only imports to function flawlessly.
+> For the best experience in VS Code or Antigravity IDE, ensure you have installed the official [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint), [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode), and [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) extensions (which are auto-recommended in `.vscode/extensions.json`).
 
 ---
 
@@ -51,16 +56,16 @@ npx ernext-config
 
 When you run `npx ernext-config`, the initialization script runs the following steps in your project root:
 
-1. **Copies `.prettierrc`**: Adds structured rules for Next.js import sorting and code formatting.
-2. **Configures VS Code Settings**: Safely merges standard settings into your `.vscode/settings.json` to enable type-only auto-imports.
-3. **Installs Dev Dependencies**: Installs the required plugins (`eslint-plugin-check-file`, `@ianvs/prettier-plugin-sort-imports`, `prettier-plugin-tailwindcss`, `eslint-config-next`, `eslint-config-prettier`, etc.) to your local project.
+1. **Copies `.prettierrc`**: Adds structured rules for Next.js import sorting and Tailwind CSS formatting.
+2. **Configures `.vscode` Templates**:
+   - Safely merges standard settings into `.vscode/settings.json` (enabling type-only auto-imports, ESLint `source.fixAll.eslint` on save, and Tailwind v4 lint options).
+   - Generates `.vscode/extensions.json` with workspace extension recommendations.
+3. **Installs Dev Dependencies**: Installs the required plugins (`eslint-plugin-check-file`, `eslint-plugin-tailwindcss`, `@ianvs/prettier-plugin-sort-imports`, `prettier-plugin-tailwindcss`, `eslint-config-next`, `eslint-config-prettier`, etc.) to your local project.
 4. **Modifies `eslint.config.mjs`**: Automatically injects `eslintConfig` (as `ernextConfig`) at the start of your ESLint Flat Config.
-5. **Configures Scripts**: Adds or updates the `format` script in your `package.json` to automatically format all files using Prettier.
+5. **Configures Scripts**: Adds or updates `lint`, `lint:fix`, and `format` scripts in your `package.json` to automatically format all files using ESLint and Prettier.
 6. **Initial Formatting & Linting**: Automatically runs a formatting pass (`npm run format`) followed by a lint check (`npm run lint`) to tidy up your codebase immediately.
 
-
-
-
+---
 
 ## 📜 Formatting Standards Applied
 

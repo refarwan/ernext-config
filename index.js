@@ -1,8 +1,14 @@
-const checkFile = require("eslint-plugin-check-file");
-
+let checkFile = null;
 let nextVitals = [];
 let nextTs = [];
 let eslintPluginPrettierRecommended = {};
+let tailwindPlugin = null;
+
+try {
+  checkFile = require("eslint-plugin-check-file");
+} catch (e) {
+  // Silent fallback if loaded before install finishes
+}
 
 try {
   nextVitals = require("eslint-config-next/core-web-vitals");
@@ -22,6 +28,160 @@ try {
   // Silent fallback if loaded before install finishes
 }
 
+try {
+  tailwindPlugin = require("eslint-plugin-tailwindcss");
+} catch (e) {
+  // Silent fallback if loaded before install finishes
+}
+
+const customTailwindPlugin = {
+  rules: {
+    "px-to-tailwind": {
+      meta: {
+        type: "suggestion",
+        docs: {
+          description:
+            "Convert pixel arbitrary values (e.g. w-[100px] -> w-25, w-[111px] -> w-27.75) to Tailwind v4 values",
+        },
+        fixable: "code",
+        schema: [],
+      },
+      create(context) {
+        const regex =
+          /(?:^|\s)(?<full>(?:[a-zA-Z0-9_-]+:)*(!?-?(?:w|h|min-w|min-h|max-w|max-h|size|p[xytbrlse]?|m[xytbrlse]?|gap(?:-[xy])?|inset(?:-[xy])?|top|right|bottom|left|rounded(?:-[a-z]+)?|tracking|leading))-\[(\d+(?:\.\d+)?)px\])(?=\s|$)/g;
+
+        function checkNode(node, strVal, rawStartOffset) {
+          if (typeof strVal !== "string") return;
+          let match;
+          regex.lastIndex = 0;
+          while ((match = regex.exec(strVal)) !== null) {
+            const full = match.groups.full;
+            const pxStr = match[3];
+            const unit = parseFloat(pxStr) / 4;
+            const replacement = full.replace(`[${pxStr}px]`, `${unit}`);
+            const matchIndex = match.index + match[0].indexOf(full);
+
+            context.report({
+              node,
+              message: `Convert arbitrary '${full}' to Tailwind v4 '${replacement}'`,
+              fix(fixer) {
+                const start = rawStartOffset + matchIndex;
+                const end = start + full.length;
+                return fixer.replaceTextRange([start, end], replacement);
+              },
+            });
+          }
+        }
+
+        return {
+          JSXAttribute(node) {
+            if (node.name.name !== "className" && node.name.name !== "class") return;
+            if (node.value?.type === "Literal" && typeof node.value.value === "string") {
+              checkNode(node, node.value.value, node.value.range[0] + 1);
+            } else if (
+              node.value?.type === "JSXExpressionContainer" &&
+              node.value.expression.type === "Literal" &&
+              typeof node.value.expression.value === "string"
+            ) {
+              checkNode(node, node.value.expression.value, node.value.expression.range[0] + 1);
+            }
+          },
+        };
+      },
+    },
+  },
+};
+
+const tailwindConfigEntry = tailwindPlugin
+  ? [
+      {
+        ...(tailwindPlugin.configs?.recommended || {}),
+        settings: {
+          tailwindcss: {
+            cssConfigPath: "app/globals.css",
+          },
+        },
+        rules: {
+          "tailwindcss/no-contradicting-classname": "error",
+          "tailwindcss/enforces-canonical-classname": "warn",
+          "tailwindcss/classnames-order": "off",
+          "tailwindcss/no-custom-classname": "off",
+          "tailwindcss/enforces-shorthand": "off",
+          "tailwindcss/no-unnecessary-arbitrary-value": "warn",
+        },
+      },
+    ]
+  : [];
+
+const checkFileConfigEntries = checkFile
+  ? [
+      {
+        files: ["**/*.{js,jsx,ts,tsx}"],
+        plugins: {
+          "check-file": checkFile,
+        },
+        rules: {
+          "check-file/filename-naming-convention": [
+            "error",
+            {
+              "**/components/**/*.{tsx,jsx}": "PASCAL_CASE",
+              "**/contexts/**/*.tsx": "PASCAL_CASE",
+              "**/contexts/**/*.jsx": "PASCAL_CASE",
+              "**/use*.{ts,js}": "CAMEL_CASE",
+              "**/contexts/**/!(use*).ts": "KEBAB_CASE",
+              "**/contexts/**/!(use*).js": "KEBAB_CASE",
+              "**/hooks/**/!(use*).{ts,js}": "KEBAB_CASE",
+              "**/utils/**/*.{ts,js}": "KEBAB_CASE",
+              "**/interfaces/**/*.{ts,js}": "KEBAB_CASE",
+              "**/services/**/*.{ts,js}": "KEBAB_CASE",
+              "**/lib/**/*.{ts,js}": "KEBAB_CASE",
+              "**/types/**/*.{ts,js}": "KEBAB_CASE",
+              "**/constants/**/*.{ts,js}": "KEBAB_CASE",
+              "**/consts/**/*.{ts,js}": "KEBAB_CASE",
+            },
+            {
+              ignoreMiddleExtensions: true,
+            },
+          ],
+          "check-file/folder-naming-convention": [
+            "error",
+            {
+              "**/components/**/": "@(*([A-Z]*([a-z0-9]))|+([a-z])*([a-z0-9])*(-+([a-z0-9])))",
+              "**/hooks/**/": "KEBAB_CASE",
+              "**/utils/**/": "KEBAB_CASE",
+              "**/contexts/**/": "KEBAB_CASE",
+              "**/interfaces/**/": "KEBAB_CASE",
+              "**/services/**/": "KEBAB_CASE",
+              "**/lib/**/": "KEBAB_CASE",
+              "**/constants/**/": "KEBAB_CASE",
+              "**/consts/**/": "KEBAB_CASE",
+            },
+          ],
+        },
+      },
+      {
+        files: ["**/*.{js,jsx,ts,tsx}"],
+        ignores: [
+          "**/components/**/*.{tsx,jsx}",
+          "**/contexts/**/*.tsx",
+          "**/contexts/**/*.jsx",
+          "**/use*.{ts,js}",
+        ],
+        rules: {
+          "check-file/filename-naming-convention": [
+            "error",
+            {
+              "**/*.{js,jsx,ts,tsx}": "KEBAB_CASE",
+            },
+            {
+              ignoreMiddleExtensions: true,
+            },
+          ],
+        },
+      },
+    ]
+  : [];
+
 const eslintConfig = [
   {
     ignores: ["**/generated/**/*"],
@@ -29,79 +189,21 @@ const eslintConfig = [
   ...nextVitals,
   ...nextTs,
   eslintPluginPrettierRecommended,
+  ...tailwindConfigEntry,
   {
+    plugins: {
+      "custom-tailwind": customTailwindPlugin,
+    },
     rules: {
       "@typescript-eslint/consistent-type-imports": [
         "error",
         { prefer: "type-imports" },
       ],
-      "prettier/prettier": ["error", { endOfLine: "auto" }],
+      "custom-tailwind/px-to-tailwind": "warn",
+      "prettier/prettier": "off",
     },
   },
-  {
-    files: ["**/*.{js,jsx,ts,tsx}"],
-    plugins: {
-      "check-file": checkFile,
-    },
-    rules: {
-      "check-file/filename-naming-convention": [
-        "error",
-        {
-          "**/components/**/*.{tsx,jsx}": "PASCAL_CASE",
-          "**/contexts/**/*.tsx": "PASCAL_CASE",
-          "**/contexts/**/*.jsx": "PASCAL_CASE",
-          "**/use*.{ts,js}": "CAMEL_CASE",
-          "**/contexts/**/!(use*).ts": "KEBAB_CASE",
-          "**/contexts/**/!(use*).js": "KEBAB_CASE",
-          "**/hooks/**/!(use*).{ts,js}": "KEBAB_CASE",
-          "**/utils/**/*.{ts,js}": "KEBAB_CASE",
-          "**/interfaces/**/*.{ts,js}": "KEBAB_CASE",
-          "**/services/**/*.{ts,js}": "KEBAB_CASE",
-          "**/lib/**/*.{ts,js}": "KEBAB_CASE",
-          "**/types/**/*.{ts,js}": "KEBAB_CASE",
-          "**/constants/**/*.{ts,js}": "KEBAB_CASE",
-          "**/consts/**/*.{ts,js}": "KEBAB_CASE",
-        },
-        {
-          ignoreMiddleExtensions: true,
-        },
-      ],
-      "check-file/folder-naming-convention": [
-        "error",
-        {
-          "**/components/**/": "@(*([A-Z]*([a-z0-9]))|+([a-z])*([a-z0-9])*(-+([a-z0-9])))",
-          "**/hooks/**/": "KEBAB_CASE",
-          "**/utils/**/": "KEBAB_CASE",
-          "**/contexts/**/": "KEBAB_CASE",
-          "**/interfaces/**/": "KEBAB_CASE",
-          "**/services/**/": "KEBAB_CASE",
-          "**/lib/**/": "KEBAB_CASE",
-          "**/constants/**/": "KEBAB_CASE",
-          "**/consts/**/": "KEBAB_CASE",
-        },
-      ],
-    },
-  },
-  {
-    files: ["**/*.{js,jsx,ts,tsx}"],
-    ignores: [
-      "**/components/**/*.{tsx,jsx}",
-      "**/contexts/**/*.tsx",
-      "**/contexts/**/*.jsx",
-      "**/use*.{ts,js}",
-    ],
-    rules: {
-      "check-file/filename-naming-convention": [
-        "error",
-        {
-          "**/*.{js,jsx,ts,tsx}": "KEBAB_CASE",
-        },
-        {
-          ignoreMiddleExtensions: true,
-        },
-      ],
-    },
-  },
+  ...checkFileConfigEntries,
   {
     files: ["**/*.ts", "**/*.tsx"],
     rules: {
