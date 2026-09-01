@@ -123,7 +123,7 @@ const tailwindConfigEntry = tailwindPlugin
   : [];
 
 const NEXT_SPECIAL_FILES =
-  "page|layout|loading|error|not-found|global-error|template|default|icon|apple-icon|opengraph-image|twitter-image";
+  "page|layout|loading|error|not-found|global-not-found|global-error|forbidden|unauthorized|template|default|icon|apple-icon|opengraph-image|twitter-image";
 
 const checkFileConfigEntries = checkFile
   ? [
