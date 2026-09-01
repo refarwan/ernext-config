@@ -19,9 +19,9 @@ Orkestrator Prettier, ESLint, Tailwind CSS v4, dan Next.js terbaik tanpa konfigu
   - Mengintegrasikan `eslint-plugin-tailwindcss` untuk mendeteksi bentrok class nyata secara akurat tanpa peringatan palsu pada pseudo-element (seperti `text-slate-800 placeholder:text-gray-400`).
   - Mengatur `.vscode/settings.json` untuk menonaktifkan linter ekstensi bawaan yang sering salah deteksi dan menyerahkan akurasi sepenuhnya ke ESLint.
 - 📁 **Konvensi Casing Ketat**:
-  - **Components (`components/`)**: Mewajibkan **PascalCase** untuk file komponen (contoh: `Navbar.tsx`), dan **PascalCase** atau **kebab-case** untuk folder.
+  - **Komponen & Berkas JSX/TSX**: Mewajibkan **PascalCase** untuk semua file komponen (`.tsx`, `.jsx`) di seluruh proyek (contoh: `Navbar.tsx`, `UserCard.jsx`), dengan tetap mengecualikan berkas khusus routing Next.js (`page.tsx`, `layout.tsx`, `loading.tsx`, dll.).
   - **Hooks (`hooks/`)**: Mewajibkan **camelCase** untuk file yang diawali `use` (contoh: `useActive.ts`), serta **kebab-case** untuk folder dan file non-hook lainnya.
-  - **Contexts (`contexts/`)**: Mewajibkan **PascalCase** untuk provider, **camelCase** untuk hook, dan **kebab-case** untuk file/folder lainnya.
+  - **Contexts (`contexts/`)**: Mewajibkan **PascalCase** untuk provider/komponen, **camelCase** untuk hook, dan **kebab-case** untuk file/folder lainnya.
   - **Utils, interfaces, lib, services, types, constants, consts**: Mewajibkan **kebab-case** untuk file maupun folder (contoh: `get-hello-world.ts`, `default-name.ts`).
 - 🔮 **Pengurutan Impor Cerdas**: Mengurutkan impor secara otomatis, memisahkan impor modul logika dan tipe data ke dalam kategori yang jelas.
 - 🎨 **Pengurutan Kelas Tailwind CSS**: Mengurutkan kelas-kelas Tailwind CSS secara otomatis pada berkas React/Next.js menggunakan Prettier tanpa mengganggu proses coding dengan pesan error inline ESLint.

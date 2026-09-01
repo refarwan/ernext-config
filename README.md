@@ -19,9 +19,9 @@ The ultimate, zero-config Prettier, ESLint, Tailwind CSS v4, and Next.js orchest
   - Integrates `eslint-plugin-tailwindcss` to catch real conflicting utility classes without false-positive warnings on pseudo-elements (like `text-slate-800 placeholder:text-gray-400`).
   - Pre-configures `.vscode/settings.json` to silence flawed extension linter conflicts while delegating full accuracy to ESLint.
 - 📁 **Casing Conventions Enforcer**:
-  - **Components (`components/`)**: Enforces **PascalCase** for component files (e.g. `Navbar.tsx`), and **PascalCase** or **kebab-case** for folders.
+  - **Components & JSX/TSX files**: Enforces **PascalCase** for all component files (`.tsx`, `.jsx`) across the project (e.g. `Navbar.tsx`, `UserCard.jsx`), while preserving Next.js special files (`page.tsx`, `layout.tsx`, `loading.tsx`, etc.).
   - **Hooks (`hooks/`)**: Enforces **camelCase** for files starting with `use` (e.g. `useActive.ts`), and **kebab-case** for folders and other non-hook files.
-  - **Contexts (`contexts/`)**: Enforces **PascalCase** for providers, **camelCase** for hooks, and **kebab-case** for other files/folders.
+  - **Contexts (`contexts/`)**: Enforces **PascalCase** for providers/components, **camelCase** for hooks, and **kebab-case** for other files/folders.
   - **Utils, interfaces, lib, services, types, constants, consts**: Enforces **kebab-case** for both files and folders (e.g. `get-hello-world.ts`, `default-name.ts`).
 - 🔮 **Smart Import Sorting**: Auto-sorts imports, separating logic and components into clear categories, and cleanly separating value imports from type-only imports.
 - 🎨 **Tailwind CSS Sorting**: Automatically sorts Tailwind CSS classes inside React components using Prettier to ensure styling consistency without distracting inline ESLint errors.

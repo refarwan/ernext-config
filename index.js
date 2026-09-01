@@ -94,8 +94,18 @@ const customTailwindPlugin = {
 
 const tailwindConfigEntry = tailwindPlugin
   ? [
+      ...(Array.isArray(tailwindPlugin.configs?.["flat/recommended"])
+        ? tailwindPlugin.configs["flat/recommended"]
+        : tailwindPlugin.configs?.["flat/recommended"]
+        ? [tailwindPlugin.configs["flat/recommended"]]
+        : [
+            {
+              plugins: {
+                tailwindcss: tailwindPlugin,
+              },
+            },
+          ]),
       {
-        ...(tailwindPlugin.configs?.recommended || {}),
         settings: {
           tailwindcss: {
             cssConfigPath: "app/globals.css",
@@ -103,7 +113,6 @@ const tailwindConfigEntry = tailwindPlugin
         },
         rules: {
           "tailwindcss/no-contradicting-classname": "error",
-          "tailwindcss/enforces-canonical-classname": "warn",
           "tailwindcss/classnames-order": "off",
           "tailwindcss/no-custom-classname": "off",
           "tailwindcss/enforces-shorthand": "off",
@@ -112,6 +121,9 @@ const tailwindConfigEntry = tailwindPlugin
       },
     ]
   : [];
+
+const NEXT_SPECIAL_FILES =
+  "page|layout|loading|error|not-found|global-error|template|default|icon|apple-icon|opengraph-image|twitter-image";
 
 const checkFileConfigEntries = checkFile
   ? [
@@ -124,9 +136,7 @@ const checkFileConfigEntries = checkFile
           "check-file/filename-naming-convention": [
             "error",
             {
-              "**/components/**/*.{tsx,jsx}": "PASCAL_CASE",
-              "**/contexts/**/*.tsx": "PASCAL_CASE",
-              "**/contexts/**/*.jsx": "PASCAL_CASE",
+              [`**/!(${NEXT_SPECIAL_FILES}).{tsx,jsx}`]: "PASCAL_CASE",
               "**/use*.{ts,js}": "CAMEL_CASE",
               "**/contexts/**/!(use*).ts": "KEBAB_CASE",
               "**/contexts/**/!(use*).js": "KEBAB_CASE",
@@ -162,9 +172,7 @@ const checkFileConfigEntries = checkFile
       {
         files: ["**/*.{js,jsx,ts,tsx}"],
         ignores: [
-          "**/components/**/*.{tsx,jsx}",
-          "**/contexts/**/*.tsx",
-          "**/contexts/**/*.jsx",
+          `**/!(${NEXT_SPECIAL_FILES}).{tsx,jsx}`,
           "**/use*.{ts,js}",
         ],
         rules: {
